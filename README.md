@@ -10,7 +10,7 @@ python ./example.py
 You can change the data to your own datasets or try to execute other protocols implemented here:
 * nPCMS: an extension for Private Count-Mean Sketch (PCMS-Mean, Apple) by running multiple times, implemented in `frequency_oracles.pcms`
 * Multi-PCMS-Mean: an extension for PCMS-Mean by encoding multiple items in one sketch, implemented in `frequency_oracles.pcms`
-* Multi-PCMS-Min: a variance of Multi-PCMS-Mean by substituting the mean-estimation with the min-estimation, implemented in `frequency_oracles.pcms`
+* Multi-PCMS-Min: a variant of Multi-PCMS-Mean by substituting the mean-estimation with the min-estimation, implemented in `frequency_oracles.pcms`
 * PrivSketch-noSmp: a pre-version of PrivSketch which does not implement the sampling, implemented in `frequency_oracles.privsketch`
 
 ## Experiments
