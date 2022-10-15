@@ -49,4 +49,4 @@ PrivSketch_vary_eps(data, total)
 See `./simulations/experiments.py` for more experiments.
 
 ## Acknowledgements
-The PCMS related code is based on the implementation [Samuel Maddock/pure-LDP](https://github.com/Samuel-Maddock/pure-LDP).
+The PCMS-Mean related code is based on the implementation [Samuel Maddock/pure-LDP](https://github.com/Samuel-Maddock/pure-LDP).
