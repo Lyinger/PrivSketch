@@ -4,8 +4,8 @@ import numpy as np
 from core import generate_hash_funcs
 
 class MultiPCMSMeanServer(FreqOracleServer):
-    def __init__(self, epsilon, k, m, estimation_items_num, is_hadamard=False, index_mapper=None):
-        super().__init__(epsilon, None, index_mapper)
+    def __init__(self, epsilon, k, m, d, estimation_items_num, is_hadamard=False, index_mapper=None):
+        super().__init__(epsilon, d, index_mapper)
         self.sketch_based = True
         self.is_hadamard = is_hadamard
         self.update_params(k, m, epsilon, index_mapper=None)

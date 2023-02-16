@@ -62,5 +62,5 @@ class PrivSketchServer(FreqOracleServer):
     def estimate(self, data, suppress_warnings=False):
         self.check_warnings(suppress_warnings)
         self.check_and_update_estimates()
-        return self.aggregated_data[self.index_mapper(data)] * self.m * self.k
+        return self.aggregated_data[data] * self.m * self.k
 

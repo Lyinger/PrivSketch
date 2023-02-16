@@ -16,12 +16,12 @@ nameMap = {
     "MultiPCMSMin": "Multi-PCMS-Min",
     "PrivSketchPre": "PrivSketch-noSmp",
     "PrivSketch": "PrivSketch",
-
+    "PSOLH": "PS-OLH",
 }
 
 class FrequencyOracleSimulation:
     def __init__(self, data, experiment_title, large_domain=False, calc_top_k=0, display_full_stats=False,
-                 autosave=False):
+                 autosave=False, vary_k=False):
 
         self.n = len(data)
         self.data = data
@@ -47,6 +47,8 @@ class FrequencyOracleSimulation:
         # When 0 the stats are calculated from the whole dataset
         # Should be used when the domain is large but data is relatively small
         self.calc_top_k = calc_top_k
+
+        self.varyK = vary_k
 
         self.name = "Frequency Oracle Simulation"
         self.reset()
@@ -222,7 +224,7 @@ class FrequencyOracleSimulation:
         plt.show()
         print("Plot Displayed...")
 
-    def __calculate_error(self, data, ldp_data, domain, n, estimation_items_num, top_k=0):
+    def __calculate_error(self, experiment_name, data, ldp_data, domain, n, estimation_items_num, top_k=0):
         min_domain_val = min(domain)
         # Maps a data value x to {0, 1, ... , len(domain)-1} for indexing purposes
         if min_domain_val < 0:
@@ -246,25 +248,37 @@ class FrequencyOracleSimulation:
         elif self.calc_top_k != 0 and self.display_full_stats is False:
             values, _ = zip(*original_counter.most_common(self.calc_top_k))
         elif top_k != 0:
-            values, _ = zip(*original_counter.most_common(self.calc_top_k))
+            # values, _ = zip(*original_counter.most_common(self.calc_top_k))
+            values, _ = zip(*original_counter.most_common(top_k))
+            sorted_indices = np.argsort(ldp_freq_data)
+            key_result = []
+            value_result = []
+            true_value_result = []
+            for j in sorted_indices[-top_k:]:
+                key_result.append(domain[j])
+                value_result.append(ldp_freq_data[j])
+                true_value_result.append(original_freq_data.get(domain[j], 0))
+            true_key_result = []
+            esti_value_result_of_true_key = []
+            true_value_result_of_true_key = []
+            for index, item in enumerate(values):
+                true_key_result.append(item)
+                esti_value_result_of_true_key.append(ldp_freq_data[index_mapper(item)])
+                true_value_result_of_true_key.append(original_freq_data.get(item, 0))
+            dataPath = "./plots/experiments/topK/"+experiment_name+".csv"
+            file = open(dataPath, "a+")
+            file.write(str(top_k)+","+str(key_result)+","+str(value_result)+","+str(true_value_result)+","+str(true_key_result)+","+str(esti_value_result_of_true_key)+","+str(true_value_result_of_true_key) + "\n")
+            file.close()
         else:
             values = domain
-
-        # Printing debug
-        # sketch_help = list(values[0:20])
-        # for item in sketch_help:
-        #     print(str(item) + ": " + str(ldp_freq_data[index_mapper(item)]))
 
         errors = []
 
         for index, item in enumerate(values):
             error = abs(ldp_freq_data[index_mapper(item)] - original_freq_data.get(item, 0))/n
-            # error = abs(ldp_freq_data[index_mapper(item)] - original_freq_data.get(item, 0))
             errors.append(error)
             total_error += error
             mse += error ** 2
-
-        # print(errors)
 
         avg_error = total_error / len(values)
         mse = mse / len(values)
@@ -275,7 +289,7 @@ class FrequencyOracleSimulation:
 
     def _generate_experiment_stats(self, experiment_name, data, ldp_data, domain, n, estimation_items_num):
         row = OrderedDict()
-        max_error, min_error, max_item, avg_error, mse, med_abs_dev = self.__calculate_error(data, ldp_data, domain, n, estimation_items_num)
+        # max_error, min_error, max_item, avg_error, mse, med_abs_dev = self.__calculate_error(data, ldp_data, domain, n, estimation_items_num)
 
         if isinstance(experiment_name, tuple):
             frequency_oracle, custom_name = experiment_name[len(experiment_name) - 2:]
@@ -283,13 +297,26 @@ class FrequencyOracleSimulation:
             frequency_oracle = experiment_name
             custom_name = ""
 
-        row["freq_oracle"] = nameMap[frequency_oracle]
+        max_error, min_error, max_item, avg_error, mse, med_abs_dev = self.__calculate_error(frequency_oracle, data, ldp_data, domain, n, estimation_items_num)
+
+        row["freq_oracle"] = frequency_oracle
         row["info"] = custom_name
         row["mse"] = mse
         row["average_error"] = avg_error
 
-        if self.display_full_stats:
-            k_max_error, k_min_error, k_max_item, k_avg_error, k_mse, k_med_abs_dev = self.__calculate_error(data,
+        if self.varyK:
+            vary_ks = [20, 40, 60, 80, 100]
+            for top_k in vary_ks:
+                k_max_error, k_min_error, k_max_item, k_avg_error, k_mse, k_med_abs_dev = self.__calculate_error(frequency_oracle, data,
+                                                                                                                 ldp_data,
+                                                                                                                 domain,
+                                                                                                                 n,
+                                                                                                                 estimation_items_num,
+                                                                                                                 top_k)
+                row["k_mse"+str(top_k)] = k_mse
+                row["k_average_error"+str(top_k)] = k_avg_error
+        elif self.display_full_stats:
+            k_max_error, k_min_error, k_max_item, k_avg_error, k_mse, k_med_abs_dev = self.__calculate_error(frequency_oracle, data,
                                                                                                              ldp_data,
                                                                                                              domain, n, estimation_items_num,
                                                                                                              self.calc_top_k)

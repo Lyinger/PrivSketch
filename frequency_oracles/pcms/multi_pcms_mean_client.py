@@ -5,8 +5,8 @@ import math
 import random
 
 class MultiPCMSMeanClient(FreqOracleClient):
-    def __init__(self, epsilon, hash_funcs, m, is_hadamard=False):
-        super().__init__(epsilon, None)
+    def __init__(self, epsilon, hash_funcs, m, is_hadamard=False, index_mapper=None):
+        super().__init__(epsilon, None, index_mapper)
         self.sketch_based = True
         self.is_hadamard = is_hadamard
         self.update_params(hash_funcs, m, epsilon)

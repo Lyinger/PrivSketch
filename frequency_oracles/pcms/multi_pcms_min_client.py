@@ -4,8 +4,8 @@ import numpy as np
 import math
 
 class MultiPCMSMinClient(FreqOracleClient):
-    def __init__(self, epsilon, hash_funcs, m, d, is_hadamard=False):
-        super().__init__(epsilon, None)
+    def __init__(self, epsilon, hash_funcs, m, d, is_hadamard=False, index_mapper=None):
+        super().__init__(epsilon, None, index_mapper)
         self.sketch_based = True
         self.is_hadamard = is_hadamard
         self.d = d
