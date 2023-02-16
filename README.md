@@ -12,6 +12,9 @@ You can change the data to your own datasets or try to execute other protocols i
 * Multi-PCMS-Mean: an extension for PCMS-Mean by encoding multiple items in one sketch, implemented in `frequency_oracles.pcms`
 * Multi-PCMS-Min: a variant of Multi-PCMS-Mean by substituting the mean-estimation with the min-estimation, implemented in `frequency_oracles.pcms`
 * PrivSketch-noSmp: a pre-version of PrivSketch which does not implement the sampling, implemented in `frequency_oracles.privsketch`
+* PS-OLH: a PSFO using OLH, implemented in `frequency_oracles.psolh`
+
+Note the implementation of SVIM can be found in [vvv214/LDP_Protocols](https://github.com/vvv214/LDP_Protocols). 
 
 ## Experiments
 There are some dataset examples under the path `./dataset`.
@@ -45,6 +48,7 @@ multiPCMSMean_vary_eps(data, total)
 multiPCMSMin_vary_eps(data, total)
 PrivSketchPre_vary_eps(data, total)
 PrivSketch_vary_eps(data, total)
+PSOLH_vary_eps(data, total)
 ```
 See `./simulations/experiments.py` for more experiments.
 
